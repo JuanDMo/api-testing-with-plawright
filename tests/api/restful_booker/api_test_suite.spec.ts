@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
-import  logIn from '../requests/log_in.ts';
 import generateUpdateInfoRequest from '../requests/update_user.ts';
 import adminRequest from '../test_data/admin.json';
+import supportJson from '../test_data/elements_expected/support.json';
+import userInList from '../test_data/elements_expected/user_in_list.json';
 
 let token: string;
 
@@ -44,13 +45,18 @@ test.describe('Suite de pruebas a nivel de API para los servicios de la API Rest
 
         const statusCode = response.status();
         const body = await response.json();
-
-        expect(statusCode).toBe(200);
-        expect(body).toHaveProperty('totalprice');
+        const usersList = body.data;
         
         console.log('Logs - Test de Get')
         console.log('Status Code => ', statusCode);
         console.log('Body => ', body);
+
+        expect(statusCode).toBe(200);
+        expect(body).toHaveProperty('totalprice');
+
+        expect(usersList).toEqual(expect.arrayContaining([ userInList ]));
+        expect(body).toEqual(expect.objectContaining(supportJson));
+        expect(body).toHaveProperty('per_page');
     });
 
     test('@Regression Test para actualizar la informacion del 1 booking - @Regression2', async ( { request } ) => {
@@ -96,7 +102,6 @@ test.describe('Suite de pruebas a nivel de API para los servicios de la API Rest
         });
 
         const statusCode = response.status();
-        //const body = await response.statusText();
 
         console.log('Status Code => ', statusCode);
         console.log('Body => ', response.statusText());
