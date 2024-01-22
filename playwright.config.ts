@@ -19,7 +19,7 @@ export default defineConfig({
   use: {
     // Information for API Testing
     ignoreHTTPSErrors: true,
-    baseURL: 'https://restful-booker.herokuapp.com',
+    baseURL: 'https://reqres.in/',
     extraHTTPHeaders: {
       'Accept': '*/*'
     },
