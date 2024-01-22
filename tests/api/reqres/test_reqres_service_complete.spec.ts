@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
+import Ajv from 'ajv';
 import  userRequest  from '../test_data/reqres/user_request.json';
 import  updateUserRequest  from '../test_data/reqres/update_user_request.json';
+import { validateSchemaForCreateUser } from '../test_data/utils/validate_create_user_schema';
 
 test.describe('Suite de pruebas para los servicios disponibles en ReqRes API', () => {
-
     const resource_url = '/api/users'
 
     const headerReqRes = {
@@ -25,6 +26,7 @@ test.describe('Suite de pruebas para los servicios disponibles en ReqRes API', (
 
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(200);
+
     });
 
     test('Test para el servicio POST - Crear un usuario', async ({ request }) => {
@@ -39,6 +41,17 @@ test.describe('Suite de pruebas para los servicios disponibles en ReqRes API', (
 
         expect(response.ok()).toBeTruthy();
         expect(response.status()).toBe(201);
+
+        const schemaExpect = validateSchemaForCreateUser();
+        const responseSchema = JSON.parse(await response.text());
+        
+        console.log('Schema 0', schemaExpect);
+        console.log('Schema 1', responseSchema);
+
+        const validator = new Ajv();
+        const schemaValidated = validator.validate(schemaExpect, responseSchema);
+        expect(schemaValidated).toEqual(true);
+
     });
 
     test('Test para el servicio DELETE - Eliminar Usuario', async ({ request }) => {
